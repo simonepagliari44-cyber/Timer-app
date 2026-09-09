@@ -1,6 +1,7 @@
 package com.simonecompany.timer.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,51 +27,58 @@ import com.simonecompany.timer.viewmodel.StopwatchViewModel
 fun StopwatchSection(viewModel: StopwatchViewModel) {
     val state by viewModel.state.collectAsState()
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "Cronometro",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Text(
-            text = formatStopwatchTime(state.elapsedMs),
-            fontSize = 64.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(48.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            TextButton(
-                onClick = { viewModel.start() },
-                enabled = !state.isRunning
+            Text(
+                text = "Cronometro",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Text(
+                text = formatStopwatchTime(state.elapsedMs),
+                fontSize = 60.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace,
+                maxLines = 1,
+                softWrap = false,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text("Start", fontSize = 18.sp)
-            }
-            TextButton(
-                onClick = { viewModel.stop() },
-                enabled = state.isRunning
-            ) {
-                Text("Stop", fontSize = 18.sp)
-            }
-            TextButton(
-                onClick = { viewModel.reset() },
-                enabled = state.elapsedMs > 0
-            ) {
-                Text("Reset", fontSize = 18.sp)
+                TextButton(
+                    onClick = { viewModel.start() },
+                    enabled = !state.isRunning
+                ) {
+                    Text("Start", fontSize = 18.sp)
+                }
+                TextButton(
+                    onClick = { viewModel.stop() },
+                    enabled = state.isRunning
+                ) {
+                    Text("Stop", fontSize = 18.sp)
+                }
+                TextButton(
+                    onClick = { viewModel.reset() },
+                    enabled = state.elapsedMs > 0
+                ) {
+                    Text("Reset", fontSize = 18.sp)
+                }
             }
         }
     }

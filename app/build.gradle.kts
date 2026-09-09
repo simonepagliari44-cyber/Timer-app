@@ -15,10 +15,20 @@ android {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file("app/keystore/timer-release.p12")
+            storePassword = "timer123"
+            keyAlias = "timer"
+            keyPassword = "timer123"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
