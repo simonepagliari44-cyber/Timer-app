@@ -1,9 +1,11 @@
 package com.simonecompany.timer
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,8 +21,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.simonecompany.timer.notification.TimerNotifier
 import com.simonecompany.timer.ui.StopwatchSection
 import com.simonecompany.timer.ui.TimerSection
 import com.simonecompany.timer.ui.theme.TimerTheme
@@ -28,8 +30,12 @@ import com.simonecompany.timer.viewmodel.StopwatchViewModel
 import com.simonecompany.timer.viewmodel.TimerViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val timerViewModel: TimerViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        handleStopTimerExtra(intent)
         enableEdgeToEdge()
         setContent {
             TimerTheme {
@@ -37,17 +43,27 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TimerApp()
+                    TimerApp(timerViewModel = timerViewModel)
                 }
             }
         }
     }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleStopTimerExtra(intent)
+    }
+
+    private fun handleStopTimerExtra(intent: Intent?) {
+        val stopId = intent?.getIntExtra(TimerNotifier.EXTRA_STOP_TIMER_ID, -1) ?: -1
+        if (stopId != -1) timerViewModel.stopTimer(stopId)
+    }
 }
 
 @Composable
-fun TimerApp() {
+fun TimerApp(timerViewModel: TimerViewModel) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val timerViewModel: TimerViewModel = viewModel()
     val stopwatchViewModel: StopwatchViewModel = viewModel()
 
     Scaffold { innerPadding ->
@@ -70,13 +86,5 @@ fun TimerApp() {
                 1 -> StopwatchSection(viewModel = stopwatchViewModel)
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TimerAppPreview() {
-    TimerTheme {
-        TimerApp()
     }
 }
